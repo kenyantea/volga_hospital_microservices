@@ -1,10 +1,10 @@
-package com.example.accounts;
+package com.example.demoauth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AccountsApplicationTests {
+class DemoauthApplicationTests {
 
 	@Test
 	void contextLoads() {
