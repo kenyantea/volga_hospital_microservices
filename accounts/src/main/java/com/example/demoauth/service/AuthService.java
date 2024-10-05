@@ -4,10 +4,7 @@ import com.example.demoauth.configs.jwt.JwtUtils;
 import com.example.demoauth.models.ERole;
 import com.example.demoauth.models.Role;
 import com.example.demoauth.models.User;
-import com.example.demoauth.pojo.JwtResponse;
-import com.example.demoauth.pojo.LoginRequest;
-import com.example.demoauth.pojo.MessageResponse;
-import com.example.demoauth.pojo.SignupRequest;
+import com.example.demoauth.pojo.*;
 import com.example.demoauth.repository.RoleRepository;
 import com.example.demoauth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class AuthService {
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -42,6 +39,9 @@ public class UserService {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
 
     public ResponseEntity<?> createUser(SignupRequest signupRequest) {
         if (userRespository.existsByUsername(signupRequest.getUsername())) {
@@ -82,12 +82,45 @@ public class UserService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
+        String refresh = jwtUtils.generateRefreshJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new JwtResponse(jwt));
+        return ResponseEntity.ok(new JwtResponse(jwt, refresh));
     }
+
+    public ResponseEntity<?> signoutUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            SecurityContextHolder.getContext().setAuthentication(null);
+        }
+        return ResponseEntity.ok("Successfully logged out.");
+    }
+
+
+    public ResponseEntity<?> validateToken(String token) {
+        boolean ok = jwtUtils.validateJwtToken(token);
+        if (ok) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    public ResponseEntity<?> refreshToken(RefreshRequest refreshRequest) {
+        String refreshToken = refreshRequest.getRefreshToken();
+
+        if (jwtUtils.validateRefreshToken(refreshToken)) {
+            String username = jwtUtils.getUserNameFromRefreshToken(refreshToken);
+            String newAccessToken = jwtUtils.generateJwtToken(username);
+            String newRefreshToken = jwtUtils.generateRefreshJwtToken(username);
+            return ResponseEntity.ok(new JwtResponse(newAccessToken, newRefreshToken));
+        } else {
+            return ResponseEntity.badRequest().body(new MessageResponse("Invalid refresh token!"));
+        }
+    }
+
 }

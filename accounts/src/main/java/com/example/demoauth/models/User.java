@@ -33,6 +33,9 @@ public class User {
 	@Column(nullable = false)
 	private String password;
 
+	@Column(nullable = false)
+	private boolean isActive = false;
+
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_roles",
 				joinColumns = @JoinColumn(name = "user_id"),
@@ -48,6 +51,7 @@ public class User {
 		this.username = username;
 		this.password = password;
 		this.roles = Set.of(new Role(ERole.ROLE_USER));
+		isActive = true;
 	}
 
 	public User(String lastName, String firstName, String username, String password, Set<Role> roles) {
@@ -56,5 +60,6 @@ public class User {
 		this.username = username;
 		this.password = password;
 		this.roles = roles;
+		isActive = true;
 	}
 }

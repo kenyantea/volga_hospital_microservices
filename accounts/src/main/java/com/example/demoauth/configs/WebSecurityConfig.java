@@ -57,22 +57,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 			.authorizeRequests()
-				.antMatchers("/api/auth/**").permitAll()
+				.antMatchers("/api/Authentication/**").permitAll()
 				.antMatchers("/api/test/**").permitAll()
+				//.antMatchers("api/Authentication/SignOut").hasAnyRole("ADMIN", "USER", "DOCTOR", "MANAGER")
 				.anyRequest().authenticated();
 		
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-		
-//		http
-//		.authorizeRequests(authorizeRequests -> 
-//				authorizeRequests
-//					.antMatchers("/board/*").hasAnyRole("MANAGER", "OPERATOR")
-//					.antMatchers("/members/*").hasRole("MANAGER")
-//					.antMatchers("/").permitAll())
-//		.httpBasic().realmName("org team")
-//		.and()
-//		.sessionManagement()
-//		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 	
 	

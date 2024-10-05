@@ -9,11 +9,14 @@ import java.util.List;
 @Getter
 public class JwtResponse {
 	
-	private String token;
+	private String authToken;
+	private String refreshToken;
 
 
-	public JwtResponse(String token) {
-		this.token = token;
+	public JwtResponse(String authToken, String refreshToken) {
+
+		this.authToken = authToken;
+		this.refreshToken = refreshToken;
 	}
 
 }
