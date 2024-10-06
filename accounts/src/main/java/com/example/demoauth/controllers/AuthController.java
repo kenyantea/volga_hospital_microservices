@@ -1,6 +1,8 @@
 package com.example.demoauth.controllers;
 
-import com.example.demoauth.pojo.*;
+import com.example.demoauth.pojo.request.LoginRequest;
+import com.example.demoauth.pojo.request.RefreshRequest;
+import com.example.demoauth.pojo.request.SignupRequest;
 import com.example.demoauth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

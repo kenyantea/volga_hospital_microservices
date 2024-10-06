@@ -4,7 +4,11 @@ import com.example.demoauth.configs.jwt.JwtUtils;
 import com.example.demoauth.models.ERole;
 import com.example.demoauth.models.Role;
 import com.example.demoauth.models.User;
-import com.example.demoauth.pojo.*;
+import com.example.demoauth.pojo.request.LoginRequest;
+import com.example.demoauth.pojo.request.RefreshRequest;
+import com.example.demoauth.pojo.request.SignupRequest;
+import com.example.demoauth.pojo.response.JwtResponse;
+import com.example.demoauth.pojo.response.MessageResponse;
 import com.example.demoauth.repository.RoleRepository;
 import com.example.demoauth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +85,13 @@ public class AuthService {
                         loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        User currentUser = userRepository.findByUsername(authentication.getName())
+                .orElse(null);
+        if (currentUser == null || !currentUser.isActive()) {
+            return ResponseEntity.notFound().build();
+        }
+
         String jwt = jwtUtils.generateJwtToken(authentication);
         String refresh = jwtUtils.generateRefreshJwtToken(authentication);
 

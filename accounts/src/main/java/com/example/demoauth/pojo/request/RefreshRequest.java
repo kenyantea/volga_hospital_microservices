@@ -1,4 +1,4 @@
-package com.example.demoauth.pojo;
+package com.example.demoauth.pojo.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

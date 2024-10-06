@@ -1,4 +1,4 @@
-package com.example.demoauth.pojo;
+package com.example.demoauth.pojo.response;
 
 import lombok.Getter;
 import lombok.Setter;
