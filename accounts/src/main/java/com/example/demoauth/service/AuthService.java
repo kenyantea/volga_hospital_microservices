@@ -113,9 +113,9 @@ public class AuthService {
 
 
     public ResponseEntity<?> validateToken(String token) {
-        boolean ok = jwtUtils.validateJwtToken(token);
-        if (ok) {
-            return ResponseEntity.ok().build();
+        if (jwtUtils.validateJwtToken(token)) {
+            System.out.println(jwtUtils.getRoleFromJwtToken(token));
+            return ResponseEntity.ok(jwtUtils.getRoleFromJwtToken(token));
         } else {
             return ResponseEntity.notFound().build();
         }

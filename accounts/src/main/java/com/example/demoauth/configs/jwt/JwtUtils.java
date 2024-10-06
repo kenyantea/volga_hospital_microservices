@@ -2,7 +2,11 @@ package com.example.demoauth.configs.jwt;
 
 import java.util.Date;
 
+import com.example.demoauth.models.ERole;
+import com.example.demoauth.models.User;
+import com.example.demoauth.repository.UserRepository;
 import io.jsonwebtoken.security.SignatureException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -27,6 +31,9 @@ public class JwtUtils {
 
 	@Value("${jwt.refreshTokenExpirationMs}")
 	private long refreshTokenExpirationMs;
+
+	@Autowired
+	UserRepository userRepository;
 
 	public String generateJwtToken(Authentication authentication) {
 		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
@@ -88,6 +95,21 @@ public class JwtUtils {
 	public String getUserNameFromJwtToken(String jwt) {
 		return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody().getSubject();
 	}
+
+	public ERole getRoleFromJwtToken(String jwt) {
+		String username = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody().getSubject();
+		User user = userRepository.findByUsername(username).orElse(null);
+		if (user == null) {
+			return null;
+		}
+		return user.getRoles().stream()
+				.findFirst()
+				.orElseThrow(() -> new RuntimeException("User must have a role"))
+				.getName();
+	}
+
+
+
 
 	public String getUserNameFromRefreshToken(String jwt) {
 		return Jwts.parser().setSigningKey(refreshTokenSecret).parseClaimsJws(jwt).getBody().getSubject();
