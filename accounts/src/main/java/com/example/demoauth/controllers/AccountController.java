@@ -48,6 +48,12 @@ public class AccountController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAccountById(@PathVariable Long id) {
+        return accountService.getAccountById(id);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<?> createAccount(@RequestBody UserRequest newUser) {
         return accountService.createUser(newUser);

@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -154,6 +155,14 @@ public class AccountService {
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    public ResponseEntity<?> getAccountById(Long id) {
+        if (userRepository.existsById(id)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 }

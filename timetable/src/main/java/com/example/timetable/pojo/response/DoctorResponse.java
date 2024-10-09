@@ -1,6 +1,5 @@
-package com.example.demoauth.pojo.response;
+package com.example.timetable.pojo.response;
 
-import com.example.demoauth.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +12,7 @@ public class DoctorResponse {
     private String firstName;
     private String username;
     private String specialty;
-    private boolean isActive;
+    private boolean active;
 }
+
 

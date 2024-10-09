@@ -30,7 +30,8 @@ public class DoctorService {
                 doctor.getUser().getLastName(),
                 doctor.getUser().getFirstName(),
                 doctor.getUser().getUsername(),
-                doctor.getSpeciality()));
+                doctor.getSpeciality(),
+                doctor.getUser().isActive()));
 
         return ResponseEntity.ok(doctorResponses);
     }
@@ -47,6 +48,7 @@ public class DoctorService {
                 doctor.getUser().getLastName(),
                 doctor.getUser().getFirstName(),
                 doctor.getUser().getUsername(),
-                doctor.getSpeciality()));
+                doctor.getSpeciality(),
+                doctor.getUser().isActive()));
     }
 }
