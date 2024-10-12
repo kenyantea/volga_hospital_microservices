@@ -1,11 +1,15 @@
 package com.example.timetable.service;
 
+import com.example.timetable.model.Appointment;
 import com.example.timetable.model.TimetableEntry;
 import com.example.timetable.pojo.request.TimetableRequest;
+import com.example.timetable.pojo.response.UserResponse;
+import com.example.timetable.repository.AppointmentRepository;
 import com.example.timetable.repository.TimetableRepository;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,9 @@ import java.util.*;
 public class TimetableService {
     @Autowired
     TimetableRepository timetableRepository;
+
+    @Autowired
+    AppointmentRepository appointmentRepository;
 
     RestTemplate restTemplate = new RestTemplate();
 
@@ -105,7 +112,7 @@ public class TimetableService {
         });
     }
 
-    private LocalDateTime parseDateTime(String dateTimeString) {
+    public LocalDateTime parseDateTime(String dateTimeString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         return LocalDateTime.parse(dateTimeString, formatter);
     }
@@ -228,18 +235,24 @@ public class TimetableService {
     }
 
     public boolean isRoomInList(String roomsData, String roomId) {
-        System.out.println(roomsData + "\n" + roomId);
-        Gson gson = new Gson();
-        JsonArray roomsArray = gson.fromJson(roomsData, JsonArray.class);
-
-        for (int i = 0; i < roomsArray.size(); i++) {
-            String room = roomsArray.get(i).getAsString();
-            System.out.println(roomId + " \"" + room + "\"");
-            if (room.equals(roomId) || roomId.equals("\"" + room + "\"")) {
-                return true;
-            }
+        if (roomsData == null || roomId == null) {
+            return false;
         }
-
+        Gson gson = new Gson();
+        try {
+            JsonArray roomsArray = gson.fromJson(roomsData, JsonArray.class);
+            if (roomsArray != null && !roomsArray.isEmpty()) {
+                for (int i = 0; i < roomsArray.size(); i++) {
+                    String room = roomsArray.get(i).getAsString();
+                    if (room.equals(roomId)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (JsonSyntaxException e) {
+            System.err.println("Error parsing JSON: " + e.getMessage());
+            return false;
+        }
         return false;
     }
 
@@ -305,8 +318,14 @@ public class TimetableService {
     }
 
     public List<TimetableEntry> getTimetableByHospitalAndRoom(Long hospitalId, String room, String fromStr, String toStr) {
-        LocalDateTime from = parseDateTime(fromStr),
-                to = parseDateTime(toStr);
+        LocalDateTime from, to;
+        try {
+            from = parseDateTime(fromStr);
+            to = parseDateTime(toStr);
+        } catch (Exception e) {
+            from = null;
+            to = null;
+        }
         if (from != null && to != null) {
             return timetableRepository.findByHospitalIdAndRoomAndTimeBetween(hospitalId, room, from, to);
         } else if (from != null) {
@@ -316,5 +335,74 @@ public class TimetableService {
         } else {
             return timetableRepository.findByHospitalIdAndRoom(hospitalId, room);
         }
+    }
+
+    public List<?> getAppointments(Long id) {
+        List<TimetableEntry> timetable = timetableRepository.getTimetableEntryById(id);
+        List<String> availableAppointments = new ArrayList<>();
+
+        for (TimetableEntry entry : timetable) {
+            LocalDateTime from = entry.getStart();
+            LocalDateTime to = entry.getEnd_time();
+
+            while (from.isBefore(to)) {
+                availableAppointments.add(from.format(DateTimeFormatter.ISO_DATE_TIME));
+                from = from.plusMinutes(30);
+            }
+        }
+
+        return availableAppointments;
+    }
+
+    public void bookAppointment(Long id, Appointment appointment) {
+        Optional<Appointment> existingAppointment = appointmentRepository.findByTimeAndTimetableId(appointment.getTime(), id);
+        if (existingAppointment.isPresent()) {
+            throw new IllegalArgumentException("Appointment at this time is already booked.");
+        }
+
+        appointment.setId(id);
+        appointmentRepository.save(appointment);
+    }
+
+    public Long getUserIdFromToken(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", token);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                "http://localhost:8080/api/Accounts/Me",
+                HttpMethod.GET,
+                requestEntity,
+                String.class);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            Gson gson = new Gson();
+            UserResponse userResponse = gson.fromJson(response.getBody(), UserResponse.class);
+            return userResponse.getId();
+        } else {
+            throw new RuntimeException("Error getting user from token: " + response.getStatusCode());
+        }
+    }
+
+    public void cancelAppointment(Long id, String token) {
+        Long userId = getUserIdFromToken(token);
+        Optional<Appointment> appointment = appointmentRepository.findById(id);
+
+        if (appointment.isEmpty()) {
+            throw new IllegalArgumentException("The appointment already doesn't exist.");
+        }
+        if (Objects.equals(appointment.get().getUser_id(), userId) ||
+                isAuthenticated(token).stream().anyMatch
+                        (role -> role.contains("ROLE_ADMIN") || role.contains("ROLE_MANAGER"))) {
+            appointmentRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("Only administrators, managers, and the patient can delete this appointment.");
+        }
+
+    }
+
+    public boolean isExistingTimetable(Long id) {
+        Optional<TimetableEntry> timetableEntry = timetableRepository.findById(id);
+        return timetableEntry.isPresent();
     }
 }

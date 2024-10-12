@@ -15,7 +15,6 @@ public class TimetableEntry {
     private Long id;
     private Long hospitalId;
     private Long doctorId;
-    private Long userId;
     private LocalDateTime start;
     private LocalDateTime end_time;
     private String room;

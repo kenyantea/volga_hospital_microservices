@@ -70,7 +70,11 @@ public class AccountService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        return ResponseEntity.ok(new UserResponse(currentUser.getLastName(), currentUser.getFirstName(), currentUser.getUsername(), true));
+        return ResponseEntity.ok(new UserResponse(currentUser.getId(),
+                currentUser.getLastName(),
+                currentUser.getFirstName(),
+                currentUser.getUsername(),
+                true));
     }
 
     public ResponseEntity<Page<User>> getAccounts(int from, int count) {

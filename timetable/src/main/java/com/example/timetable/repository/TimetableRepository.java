@@ -21,8 +21,6 @@ public interface TimetableRepository extends JpaRepository<TimetableEntry, Long>
 
     List<TimetableEntry> findByDoctorId(Long doctorId);
     List<TimetableEntry> findByHospitalId(Long hospitalId);
-
-    List<TimetableEntry> findByUserId(Long userId);
     @Query("SELECT te FROM TimetableEntry te WHERE te.doctorId = :doctorId AND te.start >= :from AND te.end_time<= :to")
     List<TimetableEntry> findByDoctorIdAndStartGreaterThanEqualAndEndLessThanEqual(Long doctorId, LocalDateTime from, LocalDateTime to);
 
@@ -52,6 +50,8 @@ public interface TimetableRepository extends JpaRepository<TimetableEntry, Long>
 
     @Query("SELECT te FROM TimetableEntry te WHERE te.hospitalId = :hospitalId AND te.room = :room")
     List<TimetableEntry> findByHospitalIdAndRoom(Long hospitalId, String room);
+
+    List<TimetableEntry> getTimetableEntryById(Long id);
 }
 
 

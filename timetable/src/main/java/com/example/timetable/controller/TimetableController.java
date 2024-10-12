@@ -1,6 +1,8 @@
 package com.example.timetable.controller;
 
+import com.example.timetable.model.Appointment;
 import com.example.timetable.model.TimetableEntry;
+import com.example.timetable.pojo.request.AppointmentRequest;
 import com.example.timetable.pojo.request.TimetableRequest;
 import com.example.timetable.pojo.response.DoctorResponse;
 import com.example.timetable.pojo.response.HospitalResponse;
@@ -13,6 +15,9 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -198,17 +203,77 @@ public class TimetableController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
         }
 
+        if (id == null || room == null) {
+            return ResponseEntity.badRequest().body("Please add the path variables.");
+        }
+
         if (!timetableService.isAuthenticated(token).stream().anyMatch(role -> role.contains("ROLE_ADMIN")
                 || role.contains("ROLE_MANAGER") || role.contains("ROLE_DOCTOR"))) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only administrators, doctors, and managers can watch it.");
         }
+
         try {
             ResponseEntity<String> roomsResponse = timetableService.getRoomsForHospital(id, token);
-            System.out.println(roomsResponse.getBody());
-            if (!roomsResponse.getStatusCode().is2xxSuccessful() || !timetableService.isRoomInList(roomsResponse.getBody(), room)) {
-                return ResponseEntity.badRequest().body("This room doesn't exist");
+
+            if (roomsResponse.getStatusCode().is2xxSuccessful() && roomsResponse.getBody() != null) {
+                if (timetableService.isRoomInList(roomsResponse.getBody(), room)) {
+                    List<TimetableEntry> list = timetableService.getTimetableByHospitalAndRoom(id, room, from, to);
+                    System.out.println(list);
+                    if (list == null || list.isEmpty()) {
+                        return ResponseEntity.ok("No rooms are available in this hospital.");
+                    }
+                    return ResponseEntity.ok(list);
+                } else {
+                    return ResponseEntity.badRequest().body("This room doesn't exist");
+                }
+            } else {
+                return ResponseEntity.badRequest().body("Error fetching rooms for hospital.");
             }
-            return ResponseEntity.ok(timetableService.getTimetableByHospitalAndRoom(id, room, from, to));
+        } catch (Exception e) {
+            System.out.println(e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/Appointments")
+    public ResponseEntity<?> getAvailableAppointments(@PathVariable Long id,
+                                                      @RequestHeader(value = "Authorization", required = false) String token) {
+        if (token == null || timetableService.isAuthenticated(token) == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
+        }
+
+        try {
+            List<?> availableAppointments = timetableService.getAppointments(id);
+            if (availableAppointments != null && !availableAppointments.isEmpty()) {
+                return ResponseEntity.ok(availableAppointments);
+            }
+            return ResponseEntity.ok("Nothing is available");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/Appointments")
+    public ResponseEntity<?> bookAppointment(@PathVariable Long id,
+                                             @RequestBody AppointmentRequest appointmentRequest,
+                                             @RequestHeader(value = "Authorization", required = false) String token) {
+        if (token == null || timetableService.isAuthenticated(token) == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
+        }
+
+        if (appointmentRequest.getTime() == null || appointmentRequest.getTime().isEmpty()) {
+            return ResponseEntity.badRequest().body("Please choose time.");
+        }
+
+        if (!timetableService.isExistingTimetable(id)) {
+            return ResponseEntity.badRequest().body("This timetable doesn't exist");
+        }
+
+        try {
+            Long userId = timetableService.getUserIdFromToken(token);
+            LocalDateTime time = LocalDateTime.parse(appointmentRequest.getTime(), DateTimeFormatter.ISO_DATE_TIME);
+            timetableService.bookAppointment(id, new Appointment(time, userId, id));
+            return ResponseEntity.ok("Appointment booked successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
