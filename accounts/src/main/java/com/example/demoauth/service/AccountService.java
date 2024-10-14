@@ -163,8 +163,8 @@ public class AccountService {
     }
 
     public ResponseEntity<?> getAccountById(Long id) {
-        if (userRepository.existsById(id)) {
-            return ResponseEntity.ok().build();
+        if (userRepository.existsById(id) && userRepository.findById(id).isPresent()) {
+            return ResponseEntity.ok().body(userRepository.findById(id).get().getRoles());
         } else {
             return ResponseEntity.notFound().build();
         }

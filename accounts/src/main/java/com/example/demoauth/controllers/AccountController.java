@@ -47,7 +47,6 @@ public class AccountController {
         return accountService.getAccounts(from, count);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getAccountById(@PathVariable Long id) {
         return accountService.getAccountById(id);
