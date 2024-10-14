@@ -1,6 +1,7 @@
 package com.example.documents.service;
 
 import com.example.documents.model.History;
+import com.example.documents.pojo.request.HistoryRequest;
 import com.example.documents.pojo.response.AccountRolesResponse;
 import com.example.documents.pojo.response.UserResponse;
 import com.example.documents.repository.HistoryRepository;
@@ -92,7 +93,7 @@ public class HistoryService {
         }
     }
 
-    public History createHistory(History history, String token) {
+    public void createHistory(HistoryRequest history, String token) {
         if (!isAuthenticated(token).stream().anyMatch
                         (role -> role.contains("ROLE_DOCTOR") || role.contains("ROLE_ADMIN") || role.contains("ROLE_MANAGER"))) {
             throw new IllegalArgumentException("Only doctors, managers, and admins can create a history entry.");
@@ -102,11 +103,16 @@ public class HistoryService {
                 history.getRoom(),token)) {
             throw new IllegalArgumentException("Please check that hospital, doctor, and room are entered correctly.");
         }
-        return historyRepository.save(history);
+        historyRepository.save(new History(history));
     }
 
-    public History updateHistory(Long id, History history, String token) {
-        history.setId(id);
+    public void updateHistory(Long id, HistoryRequest history, String token) {
+
+        History h = historyRepository.findById(id).orElse( null);
+        if (h == null) {
+            throw new IllegalArgumentException("No such history entry.");
+        }
+
         if (!isAuthenticated(token).stream().anyMatch
                 (role -> role.contains("ROLE_DOCTOR") || role.contains("ROLE_ADMIN") || role.contains("ROLE_MANAGER"))) {
             throw new IllegalArgumentException("Only doctors, managers, and admins can edit a history entry.");
@@ -116,7 +122,15 @@ public class HistoryService {
                 history.getRoom(),token)) {
             throw new IllegalArgumentException("Please check that hospital, doctor, and room are entered correctly.");
         }
-        return historyRepository.save(history);
+
+        h.setData(history.getData());
+        h.setRoom(history.getRoom());
+        h.setTime(history.getTime());
+        h.setDoctorId(history.getDoctorId());
+        h.setHospitalId(history.getHospitalId());
+        h.setPatientId(history.getPatientId());
+
+        historyRepository.save(new History(history));
     }
 
 
