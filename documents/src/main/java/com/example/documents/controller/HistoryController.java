@@ -32,7 +32,7 @@ public class HistoryController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
-            @ApiResponse(responseCode = "403", description = "Method Restricted.")
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
     })
     @GetMapping("/Account/{id}")
     public ResponseEntity<?> getHistoryByAccountId(@PathVariable Long id,
@@ -54,13 +54,11 @@ public class HistoryController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
-            @ApiResponse(responseCode = "403", description = "Method Restricted.")
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
     })
     @GetMapping("/{id}")
     public ResponseEntity<?> getHistoryById(@PathVariable Long id,
                                             @Schema(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
-
-        System.out.println(token);
 
         if (token == null || historyService.isAuthenticated(token) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
@@ -82,7 +80,7 @@ public class HistoryController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
-            @ApiResponse(responseCode = "403", description = "Method Restricted.")
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
     })
     @PostMapping
     public ResponseEntity<?> createHistory(@Valid @RequestBody HistoryRequest history,
@@ -104,7 +102,7 @@ public class HistoryController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
             @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
-            @ApiResponse(responseCode = "403", description = "Method Restricted.")
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
     })
     @PutMapping("/{id}")
     public ResponseEntity<?> updateHistory(@PathVariable Long id,

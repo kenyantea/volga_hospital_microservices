@@ -10,6 +10,12 @@ import com.example.timetable.service.TimetableService;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -21,16 +27,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
+@SecurityRequirement(name = "JWT")
 @RestController
+@Tag(name = "Timetable Controller", description = "Main controller for timetable entries & appointments")
 @RequestMapping("/api/Timetable")
 public class TimetableController {
     @Autowired
     TimetableService timetableService;
 
+    @Operation(summary="Create new timetable entry", description="Can be accessed by admins and managers only")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
+            @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
+    })
     @PostMapping
     public ResponseEntity<?> createTimetableEntry(@RequestBody TimetableRequest timetableRequest,
-                                                  @RequestHeader(value = "Authorization", required = false) String token) {
+                                                  @Schema(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || timetableService.isAuthenticated(token) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
         }
@@ -57,9 +71,16 @@ public class TimetableController {
 
     }
 
+    @Operation(summary="Update timetable entry by its id", description="Can be accessed by admins and managers only")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
+            @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<?> updateTimetableEntry(@PathVariable Long id, @RequestBody TimetableRequest timetableRequest,
-                                                  @RequestHeader(value = "Authorization", required = false) String token) {
+                                                  @Schema(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || timetableService.isAuthenticated(token) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
         }
@@ -84,8 +105,15 @@ public class TimetableController {
         }
     }
 
+    @Operation(summary="Delete timetable entry by its id", description="Can be accessed by admins and managers only")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
+            @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTimetableEntry(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String token) {
+    public ResponseEntity<?> deleteTimetableEntry(@PathVariable Long id, @Schema(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || timetableService.isAuthenticated(token) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
         }
@@ -103,8 +131,15 @@ public class TimetableController {
 
     }
 
+    @Operation(summary="Delete timetable entries of a doctor by doctor's id", description="Can be accessed by admins only")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
+            @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
+    })
     @DeleteMapping("/Doctor/{id}")
-    public ResponseEntity<?> deleteTimetableEntriesByDoctor(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String token) {
+    public ResponseEntity<?> deleteTimetableEntriesByDoctor(@PathVariable Long id, @Schema(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || timetableService.isAuthenticated(token) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
         }
@@ -126,8 +161,15 @@ public class TimetableController {
         }
     }
 
+    @Operation(summary="Delete timetable entries of a hospital by hospital's id", description="Can be accessed by admins only")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
+            @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
+    })
     @DeleteMapping("/Hospital/{id}")
-    public ResponseEntity<?> deleteTimetableEntriesByHospital(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String token) {
+    public ResponseEntity<?> deleteTimetableEntriesByHospital(@PathVariable Long id, @Schema(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || timetableService.isAuthenticated(token) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
         }
@@ -150,11 +192,18 @@ public class TimetableController {
         }
     }
 
+    @Operation(summary="Get timetable entry by its id", description="Can be accessed by authenticated users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
+            @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
+    })
     @GetMapping("/Hospital/{id}")
     public ResponseEntity<?> getTimetableByHospital(
             @PathVariable Long id,
             @RequestParam(required = false) String from,
-            @RequestParam(required = false) String to, @RequestHeader(value = "Authorization", required = false) String token) {
+            @RequestParam(required = false) String to, @Schema(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || timetableService.isAuthenticated(token) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
         }
@@ -171,11 +220,18 @@ public class TimetableController {
         }
     }
 
+    @Operation(summary="Get doctor's timetable by id", description="Can be accessed by authenticated users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
+            @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
+    })
     @GetMapping("/Doctor/{id}")
     public ResponseEntity<?> getTimetableByDoctor(
             @PathVariable Long id,
             @RequestParam(required = false) String from,
-            @RequestParam(required = false) String to, @RequestHeader(value = "Authorization", required = false) String token) {
+            @RequestParam(required = false) String to, @Schema(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || timetableService.isAuthenticated(token) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
         }
@@ -192,13 +248,20 @@ public class TimetableController {
         }
     }
 
+    @Operation(summary="Get a room's timetable hospital's id and room", description="Can be accessed by admins, doctors, and managers")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
+            @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
+    })
     @GetMapping("/Hospital/{id}/Room/{room}")
     public ResponseEntity<?> getTimetableByHospitalAndRoom(
             @PathVariable Long id,
             @PathVariable String room,
             @RequestParam(required = false) String from,
             @RequestParam(required = false) String to,
-            @RequestHeader(value = "Authorization", required = false) String token) {
+            @Schema(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || timetableService.isAuthenticated(token) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
         }
@@ -235,9 +298,16 @@ public class TimetableController {
         }
     }
 
+    @Operation(summary="Get available appointments by timetable id", description="Can be accessed by authorised users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
+            @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
+    })
     @GetMapping("/{id}/Appointments")
     public ResponseEntity<?> getAvailableAppointments(@PathVariable Long id,
-                                                      @RequestHeader(value = "Authorization", required = false) String token) {
+                                                      @Schema(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || timetableService.isAuthenticated(token) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
         }
@@ -253,10 +323,17 @@ public class TimetableController {
         }
     }
 
+    @Operation(summary="Create a new appointment", description="Can be accessed by authorised users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
+            @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
+            @ApiResponse(responseCode = "403", description = "Method Forbidden.")
+    })
     @PostMapping("/{id}/Appointments")
     public ResponseEntity<?> bookAppointment(@PathVariable Long id,
                                              @RequestBody AppointmentRequest appointmentRequest,
-                                             @RequestHeader(value = "Authorization", required = false) String token) {
+                                             @Schema(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || timetableService.isAuthenticated(token) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please sign in.");
         }
