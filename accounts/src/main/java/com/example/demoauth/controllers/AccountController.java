@@ -3,6 +3,9 @@ package com.example.demoauth.controllers;
 import com.example.demoauth.models.User;
 import com.example.demoauth.pojo.request.UserRequest;
 import com.example.demoauth.service.AccountService;
+import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,9 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.awt.print.Pageable;
 
+@Api(value = "Proceeds info about accounts", tags = {"Account Controller"})
 @RestController
 @RequestMapping("/api/Accounts")
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -20,13 +25,27 @@ public class AccountController {
     @Autowired
     AccountService accountService;
 
+    @ApiOperation(value = "Info about current account",
+            authorizations = {@Authorization(value="JWT")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success."),
+            @ApiResponse(code = 400, message = "Bad Request (in some cases, you'll get a description)."),
+            @ApiResponse(code = 401, message = "You'll have to be logged in first.")
+    })
     @GetMapping("/Me")
-    public ResponseEntity<?> currentUser(Authentication authentication) {
+    public ResponseEntity<?> currentUser(@ApiIgnore Authentication authentication) {
+        //System.out.println(token);
         return accountService.currentUser(authentication);
     }
 
+    @ApiOperation(value = "Update current account's info", notes = "Last name, first name, and password can be updated")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success."),
+            @ApiResponse(code = 400, message = "Bad Request (in some cases, you'll get a description)."),
+            @ApiResponse(code = 401, message = "You'll have to be logged in")
+    })
     @PutMapping("/Update")
-    public ResponseEntity<?> updateAccount(Authentication authentication,
+    public ResponseEntity<?> updateAccount(@ApiIgnore Authentication authentication,
                                                 @RequestBody User updatedInfo) {
         try {
             User updatedUser = accountService.updateUser(authentication, updatedInfo);
@@ -39,6 +58,13 @@ public class AccountController {
         }
     }
 
+    @ApiOperation(value = "Get accounts", notes = "Can be accessed by admin only. Gets [count] accounts from [from]-th account.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 400, message = "Bad Request (in some cases, you'll get a description)."),
+            @ApiResponse(code = 401, message = "You'll have to be logged in"),
+            @ApiResponse(code = 403, message = "You'll have to be logged in as an admin")
+    })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAllAccounts(@RequestParam(value = "from", defaultValue = "0") int from,
@@ -47,23 +73,45 @@ public class AccountController {
         return accountService.getAccounts(from, count);
     }
 
+    @ApiIgnore
     @GetMapping("/{id}")
     public ResponseEntity<?> getAccountById(@PathVariable Long id) {
         return accountService.getAccountById(id);
     }
 
+    @ApiOperation(value = "Create new account (admin)", notes = "Can be accessed by admin only. All fields can be accessed")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 400, message = "Bad Request (in some cases, you'll get a description)."),
+            @ApiResponse(code = 401, message = "You'll have to be logged in."),
+            @ApiResponse(code = 403, message = "You'll have to be logged in as an admin.")
+    })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<?> createAccount(@RequestBody UserRequest newUser) {
         return accountService.createUser(newUser);
     }
 
+    @ApiOperation(value = "Update account (by admin)", notes = "Can be accessed by admin only. All fields can be updated")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 400, message = "Bad Request (in some cases, you'll get a description)."),
+            @ApiResponse(code = 401, message = "You'll have to be logged in"),
+            @ApiResponse(code = 403, message = "You'll have to be logged in as an admin")
+    })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateAccountByAdmin(@PathVariable Long id, @RequestBody UserRequest updatedUser) {
         return accountService.updateByAdmin(id, updatedUser);
     }
 
+    @ApiOperation(value = "Delete account", notes = "Can be accessed by admin only. Soft deletes account.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "No Content. Successfully deleted"),
+            @ApiResponse(code = 400, message = "Bad Request (in some cases, you'll get a description)."),
+            @ApiResponse(code = 401, message = "You'll have to be logged in"),
+            @ApiResponse(code = 403, message = "You'll have to be logged in as an admin")
+    })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
