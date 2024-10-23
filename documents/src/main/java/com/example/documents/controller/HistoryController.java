@@ -31,6 +31,7 @@ public class HistoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
             @ApiResponse(responseCode = "403", description = "Method Forbidden.")
     })
@@ -53,6 +54,7 @@ public class HistoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
             @ApiResponse(responseCode = "403", description = "Method Forbidden.")
     })
@@ -79,6 +81,7 @@ public class HistoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
             @ApiResponse(responseCode = "403", description = "Method Forbidden.")
     })
@@ -101,6 +104,7 @@ public class HistoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
             @ApiResponse(responseCode = "403", description = "Method Forbidden.")
     })

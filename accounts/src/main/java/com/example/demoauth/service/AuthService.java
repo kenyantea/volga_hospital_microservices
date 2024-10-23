@@ -113,11 +113,15 @@ public class AuthService {
 
 
     public ResponseEntity<?> validateToken(String token) {
-        if (jwtUtils.validateJwtToken(token)) {
-            System.out.println(jwtUtils.getRoleFromJwtToken(token));
-            return ResponseEntity.ok(jwtUtils.getRoleFromJwtToken(token));
-        } else {
-            return ResponseEntity.notFound().build();
+        try {
+            if (jwtUtils.validateJwtToken(token)) {
+                System.out.println(jwtUtils.getRoleFromJwtToken(token));
+                return ResponseEntity.ok(jwtUtils.getRoleFromJwtToken(token));
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

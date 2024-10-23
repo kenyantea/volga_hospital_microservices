@@ -37,7 +37,7 @@ public class TimetableController {
 
     @Operation(summary="Create new timetable entry", description="Can be accessed by admins and managers only")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "201", description = "Successfully created."),
             @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
             @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
             @ApiResponse(responseCode = "403", description = "Method Forbidden.")
@@ -325,7 +325,7 @@ public class TimetableController {
 
     @Operation(summary="Create a new appointment", description="Can be accessed by authorised users")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "201", description = "Successfully created"),
             @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
             @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
             @ApiResponse(responseCode = "403", description = "Method Forbidden.")

@@ -3,6 +3,7 @@ package com.example.demoauth.service;
 import com.example.demoauth.models.ERole;
 import com.example.demoauth.models.Role;
 import com.example.demoauth.models.User;
+import com.example.demoauth.pojo.request.UpdateUserRequest;
 import com.example.demoauth.pojo.request.UserRequest;
 import com.example.demoauth.pojo.response.UserResponse;
 import com.example.demoauth.repository.RoleRepository;
@@ -34,7 +35,7 @@ public class AccountService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User updateUser(Authentication authentication, User updatedInfo) {
+    public User updateUser(Authentication authentication, UpdateUserRequest updatedInfo) {
         if (authentication.getName() == null || updatedInfo == null) {
             return null;
         }

@@ -199,7 +199,7 @@ public class TimetableService {
     }
 
     public ResponseEntity<String> getHospitalDataById(Long hospitalId, String token) {
-        String url = "http://localhost:8081/api/Hospitals/" + hospitalId;
+        String url = "http://hospitals:8081/api/Hospitals/" + hospitalId;
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
@@ -211,7 +211,7 @@ public class TimetableService {
     }
 
     public ResponseEntity<String> getDoctorDataById(Long doctorId, String token) {
-        String url = "http://localhost:8080/api/Doctors/" + doctorId;
+        String url = "http://accounts:8080/api/Doctors/" + doctorId;
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
@@ -223,7 +223,7 @@ public class TimetableService {
     }
 
     public ResponseEntity<String> getRoomsForHospital(Long hospitalId, String token) {
-        String url = "http://localhost:8081/api/Hospitals/" + hospitalId + "/Rooms";
+        String url = "http://hospitals:8081/api/Hospitals/" + hospitalId + "/Rooms";
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
@@ -271,7 +271,7 @@ public class TimetableService {
     }
 
     public Set<String> isAuthenticated(String token) {
-        String url = "http://localhost:8080/api/Authentication/Validate?accessToken=" +
+        String url = "http://accounts:8080/api/Authentication/Validate?accessToken=" +
                 token.substring(7);
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -370,7 +370,7 @@ public class TimetableService {
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = restTemplate.exchange(
-                "http://localhost:8080/api/Accounts/Me",
+                "http://accounts:8080/api/Accounts/Me",
                 HttpMethod.GET,
                 requestEntity,
                 String.class);

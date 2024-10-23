@@ -98,7 +98,7 @@ public class HospitalController {
 
     @Operation(summary="Create new hospital", description="Can be accessed by admins only")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "201", description = "Successfully created."),
             @ApiResponse(responseCode = "400", description = "Bad Request. Check parameters and body."),
             @ApiResponse(responseCode = "401", description = "No JWT token for auth."),
             @ApiResponse(responseCode = "403", description = "Method Forbidden.")
@@ -169,7 +169,7 @@ public class HospitalController {
     }
 
     private Set<String> isAuthenticated(String token) {
-        String url = "http://localhost:8080/api/Authentication/Validate?accessToken=" +
+        String url = "http://accounts:8080/api/Authentication/Validate?accessToken=" +
                 token.substring(7);
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);

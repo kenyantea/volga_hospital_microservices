@@ -31,7 +31,7 @@ public class AuthController {
 
 	@ApiOperation(value = "Create new account", notes = "Enter last name, first name, username and password.")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Success."),
+			@ApiResponse(code = 201, message = "Successfully created."),
 			@ApiResponse(code = 400, message = "Bad Request. Perhaps you haven't entered all the parameters or username already exists.")
 	})
 	@PostMapping("/SignUp")

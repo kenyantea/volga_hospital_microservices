@@ -1,6 +1,7 @@
 package com.example.demoauth.controllers;
 
 import com.example.demoauth.models.User;
+import com.example.demoauth.pojo.request.UpdateUserRequest;
 import com.example.demoauth.pojo.request.UserRequest;
 import com.example.demoauth.service.AccountService;
 import io.swagger.annotations.*;
@@ -46,7 +47,7 @@ public class AccountController {
     })
     @PutMapping("/Update")
     public ResponseEntity<?> updateAccount(@ApiIgnore Authentication authentication,
-                                                @RequestBody User updatedInfo) {
+                                                @RequestBody UpdateUserRequest updatedInfo) {
         try {
             User updatedUser = accountService.updateUser(authentication, updatedInfo);
             if (updatedUser == null) {
@@ -81,7 +82,7 @@ public class AccountController {
 
     @ApiOperation(value = "Create new account (admin)", notes = "Can be accessed by admin only. All fields can be accessed")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 201, message = "Successfully created."),
             @ApiResponse(code = 400, message = "Bad Request (in some cases, you'll get a description)."),
             @ApiResponse(code = 401, message = "You'll have to be logged in."),
             @ApiResponse(code = 403, message = "You'll have to be logged in as an admin.")
