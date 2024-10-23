@@ -1,6 +1,5 @@
 package com.example.demoauth.pojo.response;
 
-import com.example.demoauth.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

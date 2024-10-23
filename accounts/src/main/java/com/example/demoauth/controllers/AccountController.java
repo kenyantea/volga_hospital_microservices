@@ -5,18 +5,12 @@ import com.example.demoauth.pojo.request.UpdateUserRequest;
 import com.example.demoauth.pojo.request.UserRequest;
 import com.example.demoauth.service.AccountService;
 import io.swagger.annotations.*;
-import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import java.awt.print.Pageable;
 
 @Api(value = "Proceeds info about accounts", tags = {"Account Controller"})
 @RestController

@@ -1,21 +1,19 @@
 package com.example.demoauth.configs.jwt;
 
-import java.util.Date;
-
 import com.example.demoauth.models.ERole;
 import com.example.demoauth.models.User;
 import com.example.demoauth.repository.UserRepository;
+import com.example.demoauth.service.UserDetailsImpl;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import com.example.demoauth.service.UserDetailsImpl;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.Date;
 
 @Component
 public class JwtUtils {

@@ -4,12 +4,7 @@ import com.example.timetable.model.Appointment;
 import com.example.timetable.model.TimetableEntry;
 import com.example.timetable.pojo.request.AppointmentRequest;
 import com.example.timetable.pojo.request.TimetableRequest;
-import com.example.timetable.pojo.response.DoctorResponse;
-import com.example.timetable.pojo.response.HospitalResponse;
 import com.example.timetable.service.TimetableService;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,15 +12,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @SecurityRequirement(name = "JWT")
 @RestController

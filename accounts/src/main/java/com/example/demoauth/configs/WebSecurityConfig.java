@@ -1,5 +1,8 @@
 package com.example.demoauth.configs;
 
+import com.example.demoauth.configs.jwt.AuthEntryPointJwt;
+import com.example.demoauth.configs.jwt.AuthTokenFilter;
+import com.example.demoauth.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +16,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.example.demoauth.configs.jwt.AuthEntryPointJwt;
-import com.example.demoauth.configs.jwt.AuthTokenFilter;
-import com.example.demoauth.service.UserDetailsServiceImpl;
 
 @EnableWebSecurity
 @Configuration

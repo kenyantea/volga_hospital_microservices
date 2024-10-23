@@ -1,7 +1,6 @@
 package com.example.hospitals.controller;
 
 import com.example.hospitals.model.Hospital;
-import com.example.hospitals.model.Room;
 import com.example.hospitals.pojo.request.CreateHospitalRequest;
 import com.example.hospitals.service.HospitalService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,8 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
-import java.util.stream.StreamSupport;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Tag(name = "History Controller", description = "One and only controller for the Hospital Microservice")
 @RestController

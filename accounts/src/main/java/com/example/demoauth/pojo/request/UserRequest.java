@@ -1,6 +1,5 @@
 package com.example.demoauth.pojo.request;
 
-import com.example.demoauth.models.Role;
 import lombok.Getter;
 import lombok.Setter;
 
