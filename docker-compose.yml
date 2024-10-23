@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  accounts:
+    container_name: accounts
+    build:
+      context: ./accounts
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db_accounts
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db_accounts:5432/accounts
+      - SPRING_PROFILES_ACTIVE=prod
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=12345678
+    networks:
+      - my-network
+
+  hospitals:
+    container_name: hospitals
+    build:
+      context: ./hospitals
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db_hospitals
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db_hospitals:5432/hospitals
+      - SPRING_PROFILES_ACTIVE=prod
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=12345678
+    networks:
+      - my-network
+
+  timetable:
+    container_name: timetable
+    build:
+      context: ./timetable
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db_timetable
+    environment:
+
+        - SPRING_PROFILES_ACTIVE=prod
+        - DATABASE_USERNAME=postgres
+        - DATABASE_PASSWORD=12345678
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://db_timetable:5432/timetable
+    networks:
+      - my-network
+
+  documents:
+    container_name: documents
+    build:
+      context: ./documents
+    ports:
+      - "8083:8083"
+    depends_on:
+      - db_documents
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db_documents:5432/documents
+      - SPRING_PROFILES_ACTIVE=prod
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=12345678
+    networks:
+      - my-network
+
+  db_accounts:
+    container_name: db_accounts
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: accounts
+    networks:
+      - my-network
+    ports:
+      - "5432:5432"
+
+  db_hospitals:
+    container_name: db_hospitals
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: hospitals
+    networks:
+      - my-network
+    ports:
+      - "5433:5432"
+
+  db_timetable:
+    container_name: db_timetable
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: timetable
+    networks:
+      - my-network
+    ports:
+      - "5434:5432"
+
+  db_documents:
+    container_name: db_documents
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: documents
+    networks:
+      - my-network
+    ports:
+      - "5435:5432"
+
+networks:
+  my-network:
